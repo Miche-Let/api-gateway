@@ -1,4 +1,4 @@
-package com.miche_let.api_gateway;
+package com.michelet.api_gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
