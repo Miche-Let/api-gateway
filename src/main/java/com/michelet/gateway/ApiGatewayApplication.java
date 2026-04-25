@@ -1,4 +1,4 @@
-package com.michelet.api_gateway;
+package com.michelet.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
