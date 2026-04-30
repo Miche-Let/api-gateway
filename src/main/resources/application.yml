@@ -63,7 +63,7 @@ server:
   port: 19000
 
 jwt:
-
+  secret: ${JWT_SECRET}
 
 cors:
   allowed-origins: []
