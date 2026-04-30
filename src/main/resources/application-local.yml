@@ -1,4 +1,8 @@
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:${EUREKA_PORT:8761}/eureka/
+
+cors:
+  allowed-origins:
+    - http://localhost:3000
