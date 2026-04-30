@@ -21,10 +21,14 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return ReactiveSecurityContextHolder.getContext()
-                .map(securityContext -> securityContext.getAuthentication())
-                .flatMap(authentication -> addHeaders(authentication, exchange,chain))
-                .switchIfEmpty(chain.filter(exchange))
-                .onErrorResume(ex-> chain.filter(exchange));
+                .flatMap(securityContext -> {
+                    Authentication authentication = securityContext.getAuthentication();
+                    if(authentication == null){
+                        return chain.filter(exchange);
+                    }
+                    return addHeaders(authentication,exchange,chain);
+                })
+                .switchIfEmpty(chain.filter(exchange));
     }
 
     public Mono<Void> addHeaders(
@@ -38,8 +42,22 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
         ServerHttpRequest mutatedRequest = exchange.getRequest()
                 .mutate()
-                .header(USER_ID_HEADER, normalize(jwt.getSubject()))
-                .header(USER_ROLE_HEADER, normalize(jwt.getClaimAsString("role")))
+                .headers(
+                        httpHeaders -> {
+                            httpHeaders.remove(USER_ID_HEADER);
+                            httpHeaders.remove(USER_ROLE_HEADER);
+
+                            String userId = jwt.getSubject();
+                            if (userId != null && !userId.isBlank()) {
+                                httpHeaders.set(USER_ID_HEADER, userId);
+                            }
+
+                            String role = jwt.getClaimAsString("role");
+                            if (role != null && !role.isBlank()) {
+                                httpHeaders.set(USER_ROLE_HEADER, role);
+                            }
+                        }
+                )
                 .build();
 
         return chain.filter(exchange.mutate().request(mutatedRequest).build());
@@ -50,7 +68,4 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         return Ordered.LOWEST_PRECEDENCE - 5;
     }
 
-    private String normalize(String value){
-        return value == null ? "" : value;
-    }
 }
