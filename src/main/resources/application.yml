@@ -32,11 +32,13 @@ spring:
               uri: lb://CATALOG-SERVICE
               predicates:
                 - Path=/api/v1/products/**
+                - Method=GET
 
             - id: inventory-service
               uri: lb://INVENTORY-SERVICE
               predicates:
-                - Path=/api/v1/admin/products/**
+                - Path=/api/v1/products/**,/api/v1/admin/products/**
+                - Method=POST,PUT,PATCH,DELETE
 
             - id: order-service
               uri: lb://ORDER-SERVICE
@@ -66,4 +68,4 @@ jwt:
   secret: ${JWT_SECRET}
 
 cors:
-  allowed-origins: []
+  allowed-origins: [ ]
