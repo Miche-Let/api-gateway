@@ -28,7 +28,7 @@ public class SecurityConfig {
                         exchanges-> exchanges.pathMatchers(
                                 "/api/*/auth/login",
                                 "/api/*/auth/reissue",
-                                "/api/*/users/signup"
+                                "/api/*/users/signup", "/actuator/health", "/actuator/info"
                         ).permitAll()
                                 .pathMatchers("/api/*/admin/**").hasRole("MASTER")
                                 .anyExchange().authenticated()
